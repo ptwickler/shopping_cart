@@ -7,14 +7,13 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="cart.css">
   <script src="cart.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="./img/bm_icon.ico">
 </head>
 
 <body>
 <div class="wrapper">
 
 <?php
-
-
 
 
 if (!isset($_SESSION)) {
@@ -88,9 +87,6 @@ if (!isset($_SESSION['sign_in']) && !isset($_GET['register_new'])) {
 
 
 
-
-
-
 // Activates the register form if a user has submitted an username not in the accounts.txt list. As of now, blank
 // submissions of the login form also trigger the register form display.
 if (isset($_GET['register_new']) && $_GET['register_new'] == 1) {
@@ -113,5 +109,3 @@ elseif(isset($_GET['admin']) && $_GET['admin'] >= 2) {
     echo '<div class="admin_button"><a href="http://localhost/cart02/cart.php">Leave Admin Area</a></div><!-- end .admin_button-->';
 }
 
-
-/*$firephp->log($_SESSION, 'session');*/
