@@ -1,4 +1,7 @@
+div {
 
+    border: 1px solid olive;
+}
 body {
     background-color: #FFFFFF;
     font-family: helvetica, verdana, sans-serif;
@@ -10,10 +13,11 @@ body {
     width: 200px;
     height: 240px;
     position: relative;
-    display: inline-block;
-    margin: 30px;
+   /* display: inline-block;*/
+    margin: 20px;
     float: left;
     clear: right;
+
     background-color: #FFFFFF;
 }
 
@@ -100,6 +104,7 @@ td {
 }
 
 div.wrapper {
+overflow: hidden;
 
 }
 
@@ -129,7 +134,7 @@ div#login_wrap {
     padding: 5px;
     position: relative;
     float: right;
-    /* clear: both;*/
+    clear:right;
     width: 210px;
     border: 1px solid #dddddd;
     border-radius: 5px;
@@ -137,19 +142,20 @@ div#login_wrap {
 
 }
 
-div.banner {
+/*div.banner {
 
 
     height: 46px;
-    /*  left: 300px;
-      top: 80px;*/
+    !*  left: 300px;
+      top: 80px;*!
     float: left;
 
     margin-left: 50px;
     margin-right: auto;
 
 
-}
+
+}*/
 
 img.banner {
     width: 600px;
@@ -177,7 +183,7 @@ div.accounts_display {
 div.accounts_display td {
 
     padding: 5px 5px 5px 5px;
-    border: 1px solid #FFFFF;
+    border: 1px solid #FFFFFF   ;
 }
 
 div.account_edit {
@@ -212,7 +218,7 @@ div.admin_button {
 }
 
 div.continue_shopping_link {
-    margin: 10 px 0 0 0;
+    margin: 10px 0 0 0;
 
 }
 
@@ -251,4 +257,48 @@ input.login_sign_out {
 
 input.login_sign_in {
     margin: 5px 0 0 0;
+}
+
+#banner_box{
+    position:absolute;
+    border: 1px solid green;
+
+    left: 175px;
+    top: 25px;
+
+float: left;
+   /* margin-bottom: 100px;*/
+
+}
+
+.clear_float {
+
+    clear: both;
+}
+
+#banner_box:after {
+    content: ".";
+    visibility: hidden;
+    display: block;
+    height: 0;
+    clear: both;
+}
+
+
+
+.wrapper:after {
+    content: ".";
+    visibility: hidden;
+    display: block;
+    height: 0;
+    clear: both;
+}
+
+#product_edge {
+   width: 100%;
+
+
+    border: 1px solid yellow;
+
+    clear:both;
 }

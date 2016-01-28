@@ -24,9 +24,7 @@ if (isset($_GET['out']) && $_GET['out']==1){
 
     setcookie('signed_in',1, time() - 3600, "/" );
 
-    // I'll be honest. I had to poach the code in this if statement. I couldn't get the session ID to regenerate any
-    // other way. It would wipe out the data in the session, but it wouldn't renew the session ID. I was having some
-    // other problems and wanted to get this piece nailed down before I went on to look for another cause.
+    //Destroys the session when needed.
     if (ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
         setcookie(session_name(), '', time() - 42000,
@@ -34,14 +32,8 @@ if (isset($_GET['out']) && $_GET['out']==1){
             $params["secure"], $params["httponly"]);
     }
 
-
-
     // Finally, destroy the session.
     session_destroy();
-
-
-
-
 
     //Add in a page reload so that the session_destroy() will take effect
 
@@ -197,14 +189,18 @@ elseif(isset($_GET['remove_cart']) && $_GET['remove_cart'] ==1 ){
 // is in "shopping mode".
 elseif (!isset($_GET['admin']) && !isset($_GET['order'])){
     $product_list = display();
+
+    echo '<div id="product_edge"></div>';
     for ($i = 0; $i < count($product_list); $i++){
         echo $product_list[$i];
     }
 
-    echo "</div><!--end div.wrapper-->";
 
-    echo '</body>
-</html>';
+
+
+
+    echo '</div><!--end div.wrapper ttt--></body></html>';
+
 }
 
 
