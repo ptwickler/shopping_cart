@@ -51,7 +51,7 @@ window.onload = function (){
 
             login_box.style.height = "110px";
 
-            product_edge.style.height = "10px";
+            product_edge.style.height = "48px";
 
         }
     }
