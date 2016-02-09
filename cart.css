@@ -4,12 +4,12 @@ div {
 }
 body {
     background-color: #FFFFFF;
-    font-family: helvetica, verdana, sans-serif;
+    font-family: sans-serif, serif;
 }
 
 .product_display {
     border-radius: 5px;
-    border: 1px solid #dddddd;
+   /* border: 1px solid #dddddd;*/
     width: 200px;
     height: 240px;
     position: relative;
@@ -17,6 +17,7 @@ body {
     margin: 20px;
     float: left;
     clear: right;
+    font: sans-serif;
 
     background-color: #FFFFFF;
 }
@@ -70,6 +71,7 @@ input.disp_name {
     display: inline-block;
     text-align: center;
     background-color: #FFFFFF;
+    font-family: sans-serif;
 }
 
 .total_price {
@@ -261,7 +263,7 @@ input.login_sign_in {
 
 #banner_box{
     position:absolute;
-    border: 1px solid green;
+   /* border: 1px solid green;*/
 
     left: 175px;
     top: 25px;
