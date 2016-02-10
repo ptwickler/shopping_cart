@@ -188,7 +188,7 @@ elseif(isset($_GET['remove_cart']) && $_GET['remove_cart'] ==1 ){
 // If none of the other "special case" query strings are set, the script displays the products. That is, the site
 // is in "shopping mode".
 elseif (!isset($_GET['admin']) && !isset($_GET['order'])){
-    $product_list = display();
+    $product_list = main_products_display();
 
     echo '<div id="product_edge"></div>';
     for ($i = 0; $i < count($product_list); $i++){
