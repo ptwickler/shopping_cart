@@ -96,20 +96,20 @@ function admin_products(){
        </form>
      </div>';
 
-    return $products_display; //Into the update function.
+    return $products_display;
 }
 
-// Parses the incoming form data from the account update form and builds the query.
-// The userId will be required, but this function will build the query with the
-function acct_update($post) {
-    $db = db_connect();
-    $account_info = $post;
-    $userId = $account_info['userId'];
-    $username = $account_info['username'];
-    $email = $account_info['email'];
-    $password = $account_info['password'];
-    $admin = $account_info['admin'];
+// Builds the accountUpdate() query string from the incoming form data.
+function acct_update_query($post) {
+
+    $userId = $post['userId'];
+    $username = $post['username'];
+    $email = $post['email'];
+    $password = $post['password'];
+    $admin = $post['admin'];
+
     $account_command = "UPDATE accounts SET ";
+
 
     // This set of if/else statements check the incoming form data and concats either a comma with a space followed by the new data,
     // if a preceding form input sends data, or just the new data if no other preceding field has data in it.
@@ -118,6 +118,7 @@ function acct_update($post) {
     }
 
     if (isset($email) && $email != '') {
+
         if(isset($username) && $username !=null){
             $account_command .=", user_email='". $email . "'";
         }
@@ -126,8 +127,8 @@ function acct_update($post) {
             $account_command .= "user_email='". $email ."'";
         }
     }
-
     if (isset($password) && $password !=''){
+
         if ((isset($username) && $username != null) || (isset($email) && $email !=null)){
             $account_command .=", password='" . $password . "'";
         }
@@ -142,7 +143,6 @@ function acct_update($post) {
         if ((isset($username) && $username !=null) || (isset($email) && $email !=null) || (isset($password) && $password !=null)) {
             $account_command .=", admin=" . $admin . "";
         }
-
         else {
             $account_command .=" admin=" . $admin;
         }
@@ -150,6 +150,17 @@ function acct_update($post) {
 
     // The remainder of the query is concatted here.
     $account_command .= " WHERE userId=" . $userId . ";";
+
+    return $account_command;
+}
+
+// Updates the account with the data from the acct_update_query().
+function acct_update($post) {
+
+    $db = db_connect();
+
+    $account_command = acct_update_query($post);
+
     $db->query($account_command);
     $db->close();
     $url = "http://" . $_SERVER['HTTP_HOST'] . "/cart02/cart.php?admin=3";
@@ -226,19 +237,15 @@ function add_product($POST) {
 
     $new_product_command = 'INSERT INTO products (name,img,weight,price) VALUES ("' .$new_product_name .'","'. $new_product_img .'", '. intval($new_product_weight) .','. intval($new_product_price).');';
 
-
     $db->query($new_product_command);
 
     $db->close();
 
-    $url = "http://" . $_SERVER['HTTP_HOST'] . "/cart_fixup/cart.php?admin=4"; // After the query runs, it redirects you to the product list admin area.
+    $url = "http://" . $_SERVER['HTTP_HOST'] . "/cart02/cart.php?admin=4"; // After the query runs, it redirects you to the product list admin area.
     header("Location: " . $url) or die("Didn't work");
-
-
-
-
-
 }
+
+
 // Pulls all purchases from the dB and displays them when user is in the "Purchases" admin area.
 function admin_purchases_display() {
     $db = db_connect();
@@ -252,6 +259,8 @@ View an order:
        </form><div class="purchases_display"><table><tbody>
                             <tr><th>purchaseId</th><th>userId</th><th>orderId</th><th>product_price</th><th>quantity</th><th>purchase_date</th></tr>';
 
+
+    //TODO: Is this while loop something that can be extracted -- make a generic query result/string handler? Maybe not.
     while ($purchases_data = $purchases_result->fetch_object()) {
         $purchases_display .= '<tr><td class="purchaseId_display">' . $purchases_data->purchaseId . '</td><td class="purchase_userId_display">' . $purchases_data->userId . '</td><td class="purchases_orderId_display">' . $purchases_data->orderId . '</td><td class="purchases_product_price_display">' . $purchases_data->product_price .'</td><td class="purchases_quantity_display">'. $purchases_data->quantity . '</td><td class="purchases_date_display">' . date("F j, Y, g:i a",strtotime($purchases_data->purchase_date)) . '</td></tr>';
     }
@@ -264,14 +273,15 @@ View an order:
 
 // Displays the particular order, with username, orderId, date, items, etc., not just the raw
 // purchases table.
-function display_order($post)
-{
+function display_order($post){
+
     $db = db_connect();
 
     $order = $post['orderId'];
     $order_display_header_command = "SELECT username, purchases.orderId,purchases.purchase_date FROM accounts LEFT OUTER JOIN purchases ON accounts.userId = purchases.userId WHERE purchases.orderId =" . $order . ";";
     $order_display_header_data = $db->query($order_display_header_command)->fetch_object();
 
+    //TODO: Is this while loop something that can be extracted -- make a generic query result/string handler? Maybe not.
     $order_command = "select purchases.*, accounts.username,products.name from purchases left outer join accounts on purchases.userId = accounts.userId left outer join products on purchases.productId = products.productId where orderId =" . $order . ";";
     $order_results = $db->query($order_command);
 
@@ -290,8 +300,8 @@ function display_order($post)
 #----------------------#
 # Functions  checkout  #
 #----------------------#
-// Once the user has completed checkout successfully, this function inserts the informtion into the purchases table in the dB.
-function purchase(){
+// Once the user has completed checkout successfully, this function inserts the information into the purchases table in the dB.
+function record_purchase(){
     $db = db_connect();
 
     $order_get_orderId_command = "SELECT orderId FROM purchases ORDER BY orderId DESC LIMIT 1;"; // Get the last orderId so that we can increment it to become the new order's id number
@@ -317,6 +327,7 @@ function purchase(){
     unset($_SESSION['out_cart']);
 }
 
+//TODO: Split this function into at least two functions: One to aggregate the bits of info (from the dB and another to concat them into the email
 // Builds the confirmation email for a purchase.
 function confirm_email($user) {
     $db = db_connect();
@@ -333,6 +344,7 @@ function confirm_email($user) {
     $email_subject = $user . "-- Your Purchase from Crystals, Charms, and Coffee " . date("F d, Y h:i a");
     $total = 0;
 
+    //TODO: Extract this foreach process into a new function.
     // Iterates through the user's items and retrieves the pertinent info from the dB, then it builds the table html.
     foreach ($_SESSION['out_cart'] as $key => $value) {
         $confirm_email_command = "SELECT * FROM products WHERE productId=" . $_SESSION['out_cart'][$key]['productId'] . ";";
@@ -342,6 +354,7 @@ function confirm_email($user) {
         $message .= '<tr><td class="checkout_name">'. $confirm_email_data->name . '</td><td class="checkout_quantity">' . $_SESSION['out_cart'][$key]['quantity'] . '</td><td class="checkout_price">$' . $confirm_email_data->price * intval($_SESSION['out_cart'][$key]['quantity']) . '.00</td></tr>';
         $total +=  $confirm_email_data->price * intval($_SESSION['out_cart'][$key]['quantity']);
     }
+
     $message .= '</tbody></table><div class="total_price"> Your Total: $' . number_format($total,2) . '</div></body></html>';
 
     $headers = "From: peter.twickler@gmail.com" . "\r\n";
@@ -354,7 +367,7 @@ function confirm_email($user) {
     if ($mail == true) {
         $thanks = "Thank you for your purchase, " . $user . ". An email with your purchase receipt has been sent to your email address.<br><br>
                     Your friends at Crystals, Charms, and Coffees";
-        purchase();
+        record_purchase();
     }
 
     elseif ($mail != true) {
@@ -367,16 +380,26 @@ function confirm_email($user) {
 #----------------------#
 # Functions  index     #
 #----------------------#
-/*
- * Pulls the "properties" of the product arrays into a string to build the html for the display of the products
- *
- *  $item is the product being processed and $products is the array of products in products.php.s
- */
-function display(){
+
+function get_main_product_list() {
+
     $db = db_connect();
 
     $product_command = "SELECT * FROM products";
     $products_results = $db->query($product_command);
+
+    return $products_results;
+
+}
+
+function main_products_display(){
+    /*
+     * Pulls the "properties" of the product records (in the dB) into a string to build the html for the display of the products on the mail page.
+     *
+     */
+
+    $products_results = get_main_product_list();
+
     $product_display = array();
 
     // Iterates through the list of products and retrieves the product data to build the display.
@@ -391,6 +414,8 @@ function display(){
                          <input type="text" name ="item" value="'.$product_data->productId .'" readonly hidden="true">
                          </form>
     </div><!-- end .product_display-->');
+
+
     }
 
     return $product_display;
@@ -580,6 +605,7 @@ function user_cred($query=array()) {
         }
 
         $user_email = $_POST['email'];
+
         if ($user_email && $user_email != null) {
             $email_check = filter_var($user_email, FILTER_VALIDATE_EMAIL);
         }
