@@ -96,7 +96,7 @@ function admin_products(){
        </form>
      </div>';
 
-    return $products_display;
+    return $products_display; //Into the update function.
 }
 
 // Parses the incoming form data from the account update form and builds the query.
