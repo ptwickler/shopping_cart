@@ -135,8 +135,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 
 }
 
-
-
 // This puts the site into "checkout mode".
 if ((isset($_GET['checkout']) && $_GET['checkout'] ==1) && isset($_SESSION['out_cart'])) {
     $items = $_SESSION['out_cart'];
@@ -194,10 +192,6 @@ elseif (!isset($_GET['admin']) && !isset($_GET['order'])){
     for ($i = 0; $i < count($product_list); $i++){
         echo $product_list[$i];
     }
-
-
-
-
 
     echo '</div><!--end div.wrapper ttt--></body></html>';
 

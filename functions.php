@@ -56,24 +56,26 @@ function admin_accounts() {
     return $accounts_display;
 }
 
-// Pulls the product list from the dB and displays it in a table. It also displays the product
-// info update form.
-function admin_products(){
-    $db = db_connect();
-    $products_display_command = "SELECT * FROM products;";
-    $products_display_results = $db->query($products_display_command);
+function admin_products_table_builder($products_display_results) {
     // Starts out building the table html which will be filled in, row by row, by the below while loop.
     $products_display = '<table><tbody>
                             <tr><th>productId</th><th>name</th><th>img</th><th>weight</th><th>price</th></tr>';
-    //Iterates through the accounts table and concats in the data.
+
+    //Iterates through the products table and concats in the data.
     while ($products_display_data = $products_display_results->fetch_object()) {
         $products_display .= "<tr><td>" . $products_display_data->productId . "</td><td>" . $products_display_data->name . "</td><td>" . $products_display_data->img . "</td><td>" . $products_display_data->weight . "<td>" . $products_display_data->price . "</td>";
     }
 
     // Finishes up the table html after the rows have been added.
-    $products_display .= '</tbody></table>
+    $products_display .= '</tbody></table>';
 
-     <div class="product_edit"><span class="admin_form_notes">Edit Product Info</span><br/>
+    return $products_display;
+
+}
+
+function admin_products_forms_display(){
+
+    echo' <div class="product_edit"><span class="admin_form_notes">Edit Product Info</span><br/>
     <div class="product_edit_note"> NOTE: productId must be filled in. ALSO: The img field contains the name of the image file. It is needed to build the html that displays the image. Changing this field, therefor, could break the html and display of products.</div>
      <form  class="account_edit_form" method="POST" action="functions.php?products=1">
          <input type="text" name="productId"><label for="productId">productId</label><br/>
@@ -96,10 +98,23 @@ function admin_products(){
        </form>
      </div>';
 
+}
+
+// Pulls the product list from the dB and displays it in a table. It also displays the product
+// info update form.
+function admin_products(){
+    $db = db_connect();
+    $products_display_command = "SELECT * FROM products;";
+    $products_display_results = $db->query($products_display_command);
+
+    $products_display = admin_products_table_builder($products_display_results);
+
+    admin_products_forms_display(); // Displays the edit and add product forms.
+
     return $products_display;
 }
 
-// Builds the accountUpdate() query string from the incoming form data.
+// Builds the acct_update() query string from the incoming form data.
 function acct_update_query($post) {
 
     $userId = $post['userId'];
@@ -154,7 +169,8 @@ function acct_update_query($post) {
     return $account_command;
 }
 
-// Updates the account with the data from the acct_update_query().
+// Updates the account with the data from the acct_update_query(). Needs to be passed $post so that the query string
+// builder can access it.
 function acct_update($post) {
 
     $db = db_connect();
